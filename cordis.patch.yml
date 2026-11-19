@@ -1,0 +1,17 @@
+# Replace the Web-only rows. No effect on Desktop or a non-Web profile.
+- id: web-startup
+  name: '@deepseek-ai/dsh-web-app/startup'
+  disabled: !!js "ctx.get('profileContext')?.name !== 'desktop' && ctx.get('profileContext')?.startedBundles.includes('@deepseek-ai/dsh-web-app') === true"
+
+- id: webserver
+  name: '@deepseek-ai/dsh-host-webserver'
+  disabled: !!js "ctx.get('profileContext')?.name !== 'desktop' && ctx.get('profileContext')?.startedBundles.includes('@deepseek-ai/dsh-web-app') === true"
+
+- insert:
+    - id: dsh-web-bypass-startup
+      name: dsh-web-bypass
+      disabled: !!js "ctx.get('profileContext')?.name === 'desktop' || ctx.get('profileContext')?.startedBundles.includes('@deepseek-ai/dsh-web-app') !== true"
+
+    - id: dsh-web-bypass-server
+      name: dsh-web-bypass/server
+      disabled: !!js "ctx.get('profileContext')?.name === 'desktop' || ctx.get('profileContext')?.startedBundles.includes('@deepseek-ai/dsh-web-app') !== true"

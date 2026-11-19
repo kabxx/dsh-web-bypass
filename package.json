@@ -1,0 +1,36 @@
+{
+  "name": "dsh-web-bypass",
+  "version": "0.1.0",
+  "description": "Bypass DSH Web restrictions on wildcard binding and anonymous access",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kabxx/dsh-web-bypass.git"
+  },
+  "exports": {
+    ".": "./src/startup.js",
+    "./server": "./src/server.js",
+    "./locale/*.json": "./locale/*.json",
+    "./server/locale/*.json": "./locale/server/*.json",
+    "./icon": "./icon.svg",
+    "./server/icon": "./icon.svg"
+  },
+  "files": [
+    "src/",
+    "cordis.patch.yml",
+    "locale/",
+    "icon.svg"
+  ],
+  "scripts": {
+    "check": "node --check src/startup.js && node --check src/server.js && node --check src/runtime.js",
+    "pack:local": "node -e \"require('node:fs').mkdirSync('dist', { recursive: true })\" && npm pack --pack-destination dist"
+  },
+  "engines": {
+    "dsh": "0.2.2-rc.5"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
