@@ -9,9 +9,9 @@
 
 - insert:
     - id: dsh-web-bypass-startup
-      name: dsh-web-bypass
+      name: '@kabxx/dsh-web-bypass'
       disabled: !!js "ctx.get('profileContext')?.name === 'desktop' || ctx.get('profileContext')?.startedBundles.includes('@deepseek-ai/dsh-web-app') !== true"
 
     - id: dsh-web-bypass-server
-      name: dsh-web-bypass/server
+      name: '@kabxx/dsh-web-bypass/server'
       disabled: !!js "ctx.get('profileContext')?.name === 'desktop' || ctx.get('profileContext')?.startedBundles.includes('@deepseek-ai/dsh-web-app') !== true"

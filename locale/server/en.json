@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Web bypass service",
-    "description": "Applies wildcard binding and sign-in options."
+    "description": "Applies wildcard binding and authentication settings."
   }
 }

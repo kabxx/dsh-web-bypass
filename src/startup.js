@@ -26,7 +26,7 @@ export async function apply(ctx) {
     .option('--trusted-host <authority...>', 'accept an extra Host authority (host or host:port; repeatable)')
     .option('--tls-cert <file>', 'PEM server certificate chain; requires --tls-key')
     .option('--tls-key <file>', 'unencrypted PEM private key; requires --tls-cert')
-    .option('--allow-wildcard-host', 'permit --host 0.0.0.0 or --host :: (keeps the configured bind address if --host is omitted)')
+    .option('--allow-wildcard-host', 'permit --host 0.0.0.0 or --host ::')
     .option('--no-auth', 'allow anonymous access to the Web UI, API and WebSocket')
     .addHelpText('after', '\nFor wildcard binds, set --trusted-host to the address in the browser URL.\nUse --public-url to print that address at startup.\nWith --no-auth, clients that reach the port can act as the DSH owner.\nHost and Origin checks still apply.\n')
 

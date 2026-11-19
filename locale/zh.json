@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "DSH Web 限制解除",
-    "description": "为 dsh web 添加解除安全限制的启动选项。"
+    "title": "dsh-web-bypass",
+    "description": "为 dsh web 增加可解除安全限制的启动选项。"
   }
 }

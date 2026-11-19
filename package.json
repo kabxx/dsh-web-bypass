@@ -1,8 +1,11 @@
 {
-  "name": "dsh-web-bypass",
-  "version": "0.1.0",
+  "name": "@kabxx/dsh-web-bypass",
+  "version": "0.1.1",
   "description": "Bypass DSH Web restrictions on wildcard binding and anonymous access",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kabxx/dsh-web-bypass.git"

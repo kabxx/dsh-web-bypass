@@ -1,64 +1,86 @@
 # dsh-web-bypass
 
-`dsh-web-bypass` 为 **DSH `0.2.2-rc.5`** 的 Web 启动命令增加两个独立的开关，默认均关闭。
+为 `dsh web` 增加两个可选启动参数。
 
-| 参数 | 行为 |
-| --- | --- |
-| `--allow-wildcard-host` | 允许通过 `--host 0.0.0.0` 监听所有 IPv4 接口，或通过 `--host ::` 监听所有 IPv6 接口。只传这个开关时仍使用原有的默认地址。IPv6 通配监听能否同时接受 IPv4 连接取决于系统。 |
-| `--no-auth` | 允许匿名访问 Web 页面、API 和 WebSocket。启动链接省略 token，响应不签发登录 cookie，请求无需携带凭证。Host 和 Origin 检查继续生效。 |
+- `--allow-wildcard-host` 允许使用 `0.0.0.0` 或 `::` 作为监听地址。
+- `--no-auth` 关闭 Web 服务的身份认证。
+
+两个参数默认关闭，原有启动行为保持不变。
+
+当前支持 **DSH `0.2.2-rc.5`**。
 
 ## 安装
 
-在 DSH Web 的「插件」页面选择「添加插件」，输入插件源码目录或安装包的绝对路径。该路径应能从运行 DSH 的系统访问。
-
-也可以在仓库根目录从终端安装：
+在 DSH 的 `web` profile 中安装 npm 包。
 
 ```sh
-dsh plugin --profile web add .
+dsh plugin --profile web add @kabxx/dsh-web-bypass
 ```
 
-用安装包装时，将 `.` 替换为安装包路径。使用其他 Web profile 时，将 `web` 换成对应名称。
+也可以在 DSH Web 的「插件 → 添加插件」中输入 `@kabxx/dsh-web-bypass`。
 
-安装后运行 `dsh web --help` 确认两个参数出现，然后重启 Web 服务。使用自定义 profile 时，将启动示例中的 `dsh web` 换成 `dsh --profile <名称>`。
+安装完成后，运行 `dsh web --help`，确认两个参数已列出，然后重新启动 Web 服务。
 
-## 启动示例
+如果使用自定义 Web profile，将安装命令中的 `web` 替换为对应名称，启动时通过 `dsh --profile <名称>` 指定。
 
-将示例 IP 换成服务器的实际地址。通配监听时，DSH 默认放行回环地址。要用局域网 IP 或域名访问，只需用 `--trusted-host` 添加地址栏中的那个主机名或 IP，可以附带端口。`--public-url` 用于设置启动时打印的链接。在 IPv6 URL 和 `--trusted-host` 中，IPv6 地址需要用方括号包起来。
+## 使用
+
+### 关闭身份认证
 
 ```sh
-# IPv4 通配监听，保留 DSH 登录。
-dsh web --no-open --allow-wildcard-host --host 0.0.0.0 --trusted-host 192.168.1.20 --public-url http://192.168.1.20:3080/
-
-# IPv6 通配监听，保留 DSH 登录。
-dsh web --no-open --allow-wildcard-host --host :: --trusted-host '[fd00::20]' --public-url 'http://[fd00::20]:3080/'
+dsh web --no-auth
 ```
 
-启用 `--no-auth` 后，能连到端口的客户端可以使用 DSH 的所有者权限。`--trusted-host` 只校验浏览器使用的主机名或 IP。跨设备使用时，请用防火墙、私有网络或外部认证限制端口访问。
+默认监听地址为 `127.0.0.1:3080`。启用后，页面、API 和 WebSocket 均可免认证访问，无需启动 token 或认证 cookie。
+
+### 允许通配地址监听
+
+以下示例保留身份认证。将 `192.168.1.20` 换成浏览器实际访问的 IP 或域名。
 
 ```sh
-# 默认本机地址，关闭 DSH Web 登录。
-dsh web --no-open --no-auth
-
-# IPv4 通配监听与匿名访问同时开启。
-dsh web --no-open --allow-wildcard-host --host 0.0.0.0 --trusted-host 192.168.1.20 --public-url http://192.168.1.20:3080/ --no-auth
+dsh web \
+  --allow-wildcard-host \
+  --host 0.0.0.0 \
+  --trusted-host 192.168.1.20:3080 \
+  --public-url http://192.168.1.20:3080/
 ```
 
-通配监听时，如果省略 `--public-url`，启动时会打印本机回环地址。匿名模式直接使用页面、API 或 `/api/remote.mux`，`/connect` 返回 `204`。
+- `0.0.0.0` 监听所有 IPv4 网络接口。
+- `::` 监听所有 IPv6 网络接口。使用 IPv6 地址时，URL 和 `--trusted-host` 中的地址需要加方括号，例如 `[fd00::20]:3080`。
 
-## 开发与打包
+`--public-url` 设置启动时显示的访问地址。省略时，通配监听会显示本机回环地址。只传 `--allow-wildcard-host` 时，沿用原有的监听地址。
 
-- `src/` 包含 Web 参数解析、监听服务和 DSH 运行时加载逻辑。
-- `package.json` 声明插件入口、兼容版本和打包文件。
-- `cordis.patch.yml` 将插件接入 DSH Web profile。
-- `locale/` 和 `icon.svg` 提供插件管理页的中英文信息和图标。
+### 同时启用
 
 ```sh
+dsh web \
+  --allow-wildcard-host \
+  --host 0.0.0.0 \
+  --no-auth \
+  --trusted-host 192.168.1.20:3080 \
+  --public-url http://192.168.1.20:3080/
+```
+
+> **注意**　关闭身份认证后，能连接到 Web 端口的客户端可能以 DSH 所有者权限访问服务。请将端口访问限制在可信网络内。
+
+## 常见问题
+
+### 403 Forbidden
+
+启用 `--no-auth` 后，Host 和 Origin 校验仍然生效。通配监听时，可用 `--trusted-host 192.168.1.20:3080` 添加浏览器地址栏里的 IP 或域名及端口。`127.0.0.1` 默认放行，同一个实例可以同时通过本机回环地址和已添加的可信地址访问。
+
+## 从源码构建
+
+```sh
+git clone https://github.com/kabxx/dsh-web-bypass.git
+cd dsh-web-bypass
+
 npm run check
 npm run pack:local
 ```
 
-检查命令验证 JavaScript 语法。打包命令生成 `dist/dsh-web-bypass-0.1.0.tgz`，`dist/` 由 Git 忽略。
+安装包生成在 `dist/`。在仓库目录执行以下命令，可以直接安装本地源码进行测试。
 
-## 版本兼容
-
-插件复用 DSH 自带的 HTTP 服务与 Host/Origin 检查，并接入当前版本的内部浏览器认证入口。升级 DSH 后需要重新适配并验证。
+```sh
+dsh plugin --profile web add .
+```
