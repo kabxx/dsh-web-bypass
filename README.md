@@ -13,7 +13,7 @@ cd dsh-web-bypass
 npm run pack:local
 ```
 
-通过 `dsh plugin --profile web add ./dist/kabxx-dsh-web-bypass-0.1.1.tgz` 安装，或在 DSH 插件管理器中选择「添加插件」并填入该 `.tgz`（或仓库目录）的绝对路径，重启 `dsh web` 后生效。
+通过 `dsh plugin --profile web add ./dist/kabxx-dsh-web-bypass-0.1.2.tgz` 安装，或在 DSH 插件管理器中选择「添加插件」并填入该 `.tgz`（或仓库目录）的绝对路径，重启 `dsh web` 后生效。
 
 ## 使用
 
