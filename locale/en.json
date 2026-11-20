@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "dsh-web-bypass",
-    "description": "Adds startup options to bypass security restrictions in dsh web."
+    "description": "Add startup options to bypass default restrictions in dsh web."
   }
 }

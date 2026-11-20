@@ -1,7 +1,7 @@
 {
   "name": "@kabxx/dsh-web-bypass",
   "version": "0.1.1",
-  "description": "Bypass DSH Web restrictions on wildcard binding and anonymous access",
+  "description": "Startup options to bypass default restrictions in DeepSeek Harness Web.",
   "type": "module",
   "publishConfig": {
     "access": "public"

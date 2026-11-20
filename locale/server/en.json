@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Web bypass service",
-    "description": "Applies wildcard binding and authentication settings."
+    "title": "dsh-web-bypass/server",
+    "description": "Apply server-side restriction bypasses for dsh web."
   }
 }

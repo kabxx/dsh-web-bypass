@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Web 限制解除服务",
-    "description": "应用通配监听和认证设置。"
+    "title": "dsh-web-bypass/server",
+    "description": "按启动参数放宽 dsh web 的服务端限制。"
   }
 }

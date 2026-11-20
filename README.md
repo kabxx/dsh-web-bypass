@@ -1,58 +1,31 @@
-# dsh-web-bypass
+# @kabxx/dsh-web-bypass
 
-为 `dsh web` 增加两个可选启动参数。
+面向 DeepSeek Harness Web（`0.2.2-rc.5`）的启动参数扩展插件。
 
-- `--allow-wildcard-host` 允许使用 `0.0.0.0` 或 `::` 作为监听地址。
-- `--no-auth` 关闭 Web 服务的身份认证。
-
-两个参数默认关闭，原有启动行为保持不变。
-
-当前支持 **DSH `0.2.2-rc.5`**。
+- `--allow-wildcard-host`：允许 `--host` 绑定 `0.0.0.0` 或 `::`。
+- `--no-auth`：关闭页面、API 与 WebSocket 的身份认证（可达该端口的客户端均具备所有者权限，请仅在可信网络内开放）。
 
 ## 安装
 
-在 DSH 的 `web` profile 中安装 npm 包。
-
-```sh
-dsh plugin --profile web add @kabxx/dsh-web-bypass
+```bash
+git clone https://github.com/kabxx/dsh-web-bypass.git
+cd dsh-web-bypass
+npm run pack:local
 ```
 
-也可以在 DSH Web 的「插件 → 添加插件」中输入 `@kabxx/dsh-web-bypass`。
-
-安装完成后，运行 `dsh web --help`，确认两个参数已列出，然后重新启动 Web 服务。
-
-如果使用自定义 Web profile，将安装命令中的 `web` 替换为对应名称，启动时通过 `dsh --profile <名称>` 指定。
+通过 `dsh plugin --profile web add ./dist/kabxx-dsh-web-bypass-0.1.1.tgz` 安装，或在 DSH 插件管理器中选择「添加插件」并填入该 `.tgz`（或仓库目录）的绝对路径，重启 `dsh web` 后生效。
 
 ## 使用
 
-### 关闭身份认证
+本机免认证启动：
 
-```sh
+```bash
 dsh web --no-auth
 ```
 
-默认监听地址为 `127.0.0.1:3080`。启用后，页面、API 和 WebSocket 均可免认证访问，无需启动 token 或认证 cookie。
+局域网开放（Host / Origin 校验仍开启，需通过 `--trusted-host` 放行浏览器访问地址）：
 
-### 允许通配地址监听
-
-以下示例保留身份认证。将 `192.168.1.20` 换成浏览器实际访问的 IP 或域名。
-
-```sh
-dsh web \
-  --allow-wildcard-host \
-  --host 0.0.0.0 \
-  --trusted-host 192.168.1.20:3080 \
-  --public-url http://192.168.1.20:3080/
-```
-
-- `0.0.0.0` 监听所有 IPv4 网络接口。
-- `::` 监听所有 IPv6 网络接口。使用 IPv6 地址时，URL 和 `--trusted-host` 中的地址需要加方括号，例如 `[fd00::20]:3080`。
-
-`--public-url` 设置启动时显示的访问地址。省略时，通配监听会显示本机回环地址。只传 `--allow-wildcard-host` 时，沿用原有的监听地址。
-
-### 同时启用
-
-```sh
+```bash
 dsh web \
   --allow-wildcard-host \
   --host 0.0.0.0 \
@@ -61,26 +34,24 @@ dsh web \
   --public-url http://192.168.1.20:3080/
 ```
 
-> **注意**　关闭身份认证后，能连接到 Web 端口的客户端可能以 DSH 所有者权限访问服务。请将端口访问限制在可信网络内。
+## 开发
 
-## 常见问题
+本包无外部依赖，基于 Node.js 原生 ESM 运行，启动时从宿主 DSH（`0.2.2-rc.5`）加载内部模块：
 
-### 403 Forbidden
-
-启用 `--no-auth` 后，Host 和 Origin 校验仍然生效。通配监听时，可用 `--trusted-host 192.168.1.20:3080` 添加浏览器地址栏里的 IP 或域名及端口。`127.0.0.1` 默认放行，同一个实例可以同时通过本机回环地址和已添加的可信地址访问。
-
-## 从源码构建
-
-```sh
-git clone https://github.com/kabxx/dsh-web-bypass.git
-cd dsh-web-bypass
-
+```bash
 npm run check
+npm pack --dry-run
 npm run pack:local
 ```
 
-安装包生成在 `dist/`。在仓库目录执行以下命令，可以直接安装本地源码进行测试。
+## 项目结构
 
-```sh
-dsh plugin --profile web add .
-```
+| 路径 | 内容 |
+| --- | --- |
+| [`src/startup.js`](src/startup.js) | 注册 CLI 启动参数、校验监听地址并解析运行配置 |
+| [`src/server.js`](src/server.js) | 应用通配地址绑定、免认证中间件与安全告警 |
+| [`src/runtime.js`](src/runtime.js) | 从宿主 DSH 安装目录动态加载运行时模块 |
+| [`locale/`](locale/) | 主插件与 `server` 子插件的中英文元信息 |
+| [`dist/`](dist/) | `npm run pack:local` 生成的本地安装包 |
+
+插件入口与替换规则见 [package.json](package.json) 和 [cordis.patch.yml](cordis.patch.yml)。
