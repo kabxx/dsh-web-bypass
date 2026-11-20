@@ -38,20 +38,27 @@ function useAnonymousBrowserAuth(ctx) {
   }, 'dsh-web-bypass: anonymous browser admission')
 }
 
-export async function apply(ctx, config) {
-  const { WebServer, isWildcardHost, normalizeBindAddress } = await importDsh(
-    dshRequire(ctx), '@deepseek-ai/dsh-host-webserver',
-  )
-  const startup = ctx.webStartup
-  const settings = {
-    host: startup.host ?? '127.0.0.1',
-    port: startup.port ?? 3080,
-    tls: startup.tls,
-    compression: 'gzip',
-    compressionLevel: 1,
-    compressionThresholdBytes: 1024,
-    ...config,
+function getInheritedSettings(ctx, interpolate) {
+  // The native row is disabled, but its composed config still includes profile patches.
+  const source = ctx.fiber.entry.parent.data.find(entry => entry.id === 'webserver')
+  if (source?.name !== '@deepseek-ai/dsh-host-webserver') {
+    throw new Error('dsh-web-bypass: cannot find the native webserver configuration')
   }
+  const settings = interpolate(ctx, source.config)
+  if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
+    throw new Error('dsh-web-bypass: invalid native webserver configuration')
+  }
+  return settings
+}
+
+export async function apply(ctx, config) {
+  const requireDsh = dshRequire(ctx)
+  const [ { WebServer, isWildcardHost, normalizeBindAddress }, { interpolate } ] = await Promise.all([
+    importDsh(requireDsh, '@deepseek-ai/dsh-host-webserver'),
+    importDsh(requireDsh, '@deepseek-ai/cordis-plugin-loader'),
+  ])
+  const startup = ctx.webStartup
+  const settings = { ...getInheritedSettings(ctx, interpolate), ...config }
 
   let Server = WebServer
   if (startup.allowWildcardHost && isWildcardHost(settings.host)) {
