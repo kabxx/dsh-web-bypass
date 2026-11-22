@@ -8,12 +8,10 @@
 ## 安装
 
 ```bash
-git clone https://github.com/kabxx/dsh-web-bypass.git
-cd dsh-web-bypass
-npm run pack:local
+dsh plugin --profile web add @kabxx/dsh-web-bypass
 ```
 
-通过 `dsh plugin --profile web add ./dist/kabxx-dsh-web-bypass-0.1.2.tgz` 安装，或在 DSH 插件管理器中选择「添加插件」并填入该 `.tgz`（或仓库目录）的绝对路径，重启 `dsh web` 后生效。
+也可在 DSH 插件管理器中选择「添加插件」并输入 `@kabxx/dsh-web-bypass`，安装后重启 `dsh web` 生效。本地调试源码时，直接填入克隆后的仓库目录绝对路径或执行 `dsh plugin --profile web add .` 即可。
 
 ## 使用
 
@@ -52,6 +50,6 @@ npm run pack:local
 | [`src/server.js`](src/server.js) | 应用通配地址绑定、免认证中间件与安全告警 |
 | [`src/runtime.js`](src/runtime.js) | 从宿主 DSH 安装目录动态加载运行时模块 |
 | [`locale/`](locale/) | 主插件与 `server` 子插件的中英文元信息 |
-| [`dist/`](dist/) | `npm run pack:local` 生成的本地安装包 |
+| `dist/` | `npm run pack:local` 生成的本地安装包（未纳入版本库） |
 
 插件入口与替换规则见 [package.json](package.json) 和 [cordis.patch.yml](cordis.patch.yml)。
